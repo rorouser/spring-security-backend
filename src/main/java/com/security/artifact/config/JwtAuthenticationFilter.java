@@ -1,6 +1,7 @@
 package com.security.artifact.config;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,31 +28,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final UserDetailsService userDetailsService;
 	private final TokenRepository tokenRepository;
 
+	private static final Set<String> PUBLIC_PATHS = Set.of(
+			"/api/auth/register",
+			"/api/auth/authenticate",
+			"/oauth2/authorization"
+	);
+
 	@Override
-	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-			@NonNull FilterChain filterChain) throws ServletException, IOException {		
-		final String authHeader = request.getHeader("Authorization");
-		final String jwt;
-		final String userEmail;
-		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+		String path = request.getServletPath();
+
+		boolean isPublic = PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+		if (isPublic) {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		jwt= authHeader.substring(7);
-		userEmail = jwtService.extractUserName(jwt);
-		if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+		// Extraer token desde cookie
+		String jwt = null;
+		if (request.getCookies() != null) {
+			for (var cookie : request.getCookies()) {
+				if ("token".equals(cookie.getName())) {
+					jwt = cookie.getValue();
+					break;
+				}
+			}
+		}
+
+		if (jwt == null) {
+			// Si no hay token en cookie, continuar sin autenticación
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		final String userEmail = jwtService.extractUserName(jwt);
+		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 			var isTokenValid = tokenRepository.findByToken(jwt)
 					.map(t -> !t.isExpired() && !t.isRevoked())
 					.orElse(false);
-			if(jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+			if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-						userDetails, 
+						userDetails,
 						null,
 						userDetails.getAuthorities()
 				);
 				authToken.setDetails(
-					new WebAuthenticationDetailsSource().buildDetails(request)	
+						new WebAuthenticationDetailsSource().buildDetails(request)
 				);
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class CustomOAuth2SuccessHandler  implements AuthenticationSuccessHandler {
+public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
@@ -41,7 +41,6 @@ public class CustomOAuth2SuccessHandler  implements AuthenticationSuccessHandler
         if (userOptional.isPresent()) {
             user = userOptional.get();
         } else {
-            // Crear REDACTED_PASSWORD nuevo asociado a OAuth2
             user = User.builder()
                     .firstName(name)
                     .lastName("")
@@ -55,7 +54,7 @@ public class CustomOAuth2SuccessHandler  implements AuthenticationSuccessHandler
 
         String token = jwtService.generateToken(user);
 
-        // Retornar el JWT al frontend
+        // Redirection to frontend
         response.sendRedirect("http://localhost:4200/oauth2-redirect?token=" + token);
     }
 }

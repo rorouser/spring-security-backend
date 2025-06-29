@@ -1,6 +1,8 @@
 package com.security.artifact.auth;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +14,8 @@ import com.security.artifact.exceptions.NewUserWithDifferentPasswordException;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -21,21 +25,13 @@ public class AuthenticationController {
 
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-	    try {
-	        AuthenticationResponse response = authenticationService.register(request);
-	        return ResponseEntity.ok(response);
-	    } catch (NewUserWithDifferentPasswordException e) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                .body("Las contraseñas no coinciden");
-	    } catch (ResponseStatusException e) {
-	        return ResponseEntity.status(e.getStatusCode())
-	        		.body(e.getReason());
-	    }
+		return authenticationService.register(request);
 	}
 
 
+
 	@PostMapping("/authenticate")
-	public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-		return ResponseEntity.ok(authenticationService.authenticate(request));
+	public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
+		return authenticationService.authenticate(request);
 	}
 }

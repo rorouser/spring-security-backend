@@ -30,8 +30,6 @@ public class UserService {
 	                    .lastName(value.getLastName())
 	                    .secondLastName(value.getSecondLastName())
 	                    .email(value.getEmail())
-	                    .userHeight(value.getUserHeight())
-	                    .userWeight(value.getUserWeight())
 	                    .registrationDate(value.getRegistrationDate())
 	                    .build())
 	            .orElse(null);
@@ -54,13 +52,6 @@ public class UserService {
 	            updatedUser.setPassword(existingUser.getPassword());
 	
 	            updatedUser.setTokens(existingUser.getTokens());
-	            /*updatedUser.setRoutines(existingUser.getRoutines());
-	            updatedUser.setWorkouts(existingUser.getWorkouts());
-	            updatedUser.setFavouriteExercises(existingUser.getFavouriteExercises());
-	
-	            existingUser.getExercises().clear();
-	            existingUser.getExercises().addAll(updatedUser.getExercises());
-	            updatedUser.setExercises(existingUser.getExercises());*/
 	
 	            User savedUser = userRepository.save(updatedUser);
 	
@@ -70,8 +61,6 @@ public class UserService {
 	                    .lastName(savedUser.getLastName())
 	                    .email(savedUser.getEmail())
 	                    .registrationDate(savedUser.getRegistrationDate())
-	                    .userWeight(savedUser.getUserWeight())
-	                    .userHeight(savedUser.getUserHeight())
 	                    .build();
 	
 	            return userResponse;
@@ -99,8 +88,6 @@ public class UserService {
                             .lastName(user.getLastName())
                             .secondLastName(user.getSecondLastName())
                             .registrationDate(user.getRegistrationDate())
-                            .userHeight(user.getUserHeight())
-                            .userWeight(user.getUserWeight())
                             .role(user.getRole().toString())
                             .build())
                     .sorted(Comparator.comparing(UserResponse::getId))

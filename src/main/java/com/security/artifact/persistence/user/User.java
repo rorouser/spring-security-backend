@@ -50,10 +50,6 @@ public class User implements UserDetails{
 
 	private String provider;
 	
-	private int userWeight;
-	
-	private int userHeight;
-	
 	@CreationTimestamp
 	@Column(name = "registration_date", nullable = false, updatable = false)
 	private Date registrationDate;

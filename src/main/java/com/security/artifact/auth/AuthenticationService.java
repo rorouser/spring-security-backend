@@ -4,7 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +25,8 @@ import com.security.artifact.token.TokenType;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -38,60 +43,64 @@ public class AuthenticationService {
 	
 	private static final Logger log = LogManager.getLogger(AuthenticationService.class);
 
-	public AuthenticationResponse register(RegisterRequest request) throws NewUserWithDifferentPasswordException {
-		
-		if(request.getPassword().contentEquals(request.getPassword2())) {
-			var user = User.builder()
-					.firstName(request.getFirstname())
-					.lastName(request.getLastname())
-					.secondLastName(request.getSecondLastName())
-					.provider("LOCAL")
-					.email(request.getEmail())
-					.userWeight(request.getUserWeight())
-					.userHeight(request.getUserHeight())
-					.password(passwordEncoder.encode(request.getPassword()))
-					.role(request.getRole() != null ? request.getRole() : Role.USER)
-					.build();
-			try {
-				var savedUser = userRepository.save(user);
-				var jwtToken = jwtService.generateToken(user);
-				saveUserToken(savedUser, jwtToken);
-				log.info("AuthenticationService() - User registered");
+	public ResponseEntity<?> register(RegisterRequest request) {
 
-				
-				return AuthenticationResponse.builder()
-						.token(jwtToken)
-						.userId(user.getId())
-						.role(user.getRole())
-						.build();				
-			} catch(DataIntegrityViolationException ex) {
-				log.error("AuthenticationService() - User cannot be registered beacuse the email is in use");
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este email ya está en uso");		
-			}
-			
-		} else {
-			log.error("AuthenticationService() - User cannot be registered beacuse the password does not match");
-			throw new NewUserWithDifferentPasswordException();
+		if (!request.getPassword().contentEquals(request.getPassword2())) {
+			log.error("AuthenticationService() - User cannot be registered because the passwords do not match");
+			return ResponseEntity.badRequest().body("Las contraseñas no coinciden");
 		}
-		
+
+		var user = User.builder()
+				.firstName(request.getFirstname())
+				.lastName(request.getLastname())
+				.secondLastName(request.getSecondLastName())
+				.provider("LOCAL")
+				.email(request.getEmail())
+				.password(passwordEncoder.encode(request.getPassword()))
+				.role(request.getRole() != null ? request.getRole() : Role.USER)
+				.build();
+
+		try {
+			var savedUser = userRepository.save(user);
+			var jwtToken = jwtService.generateToken(user);
+			saveUserToken(savedUser, jwtToken);
+			log.info("AuthenticationService() - User registered");
+
+			ResponseCookie cookie = createJwtCookie(jwtToken);
+
+			return ResponseEntity.ok()
+					.header(HttpHeaders.SET_COOKIE, cookie.toString())
+					.body(Map.of(
+							"userId", user.getId(),
+							"role", user.getRole()
+					));
+		} catch (DataIntegrityViolationException ex) {
+			log.error("AuthenticationService() - User cannot be registered because the email is in use");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Este email ya está en uso");
+		}
 	}
 
-	public AuthenticationResponse authenticate(AuthenticationRequest request) {
+	public ResponseEntity<?> authenticate(AuthenticationRequest request) {
 
-		authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-		var user = userRepository
-				.findByEmail(request.getEmail())
-				.orElseThrow();
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+		var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 		var jwtToken = jwtService.generateToken(user);
+
 		revokeAllUserTokens(user);
 		saveUserToken(user, jwtToken);
-		return AuthenticationResponse.builder()
-				.token(jwtToken)
-				.userId(user.getId())
-				.role(user.getRole())
-				.build();
+
+		ResponseCookie cookie = createJwtCookie(jwtToken);
+
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, cookie.toString())
+				.body(Map.of(
+						"userId", user.getId(),
+						"role", user.getRole()
+				));
 	}
+
 
 	private void revokeAllUserTokens(User user) {
 		var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
@@ -114,8 +123,16 @@ public class AuthenticationService {
 				.expired(false).build();
 		tokenRepository.save(token);
 	}
-	
-	
+
+	private ResponseCookie createJwtCookie(String jwtToken) {
+		return ResponseCookie.from("token", jwtToken)
+				.httpOnly(true)
+				.secure(true) // En producción HTTPS
+				.path("/")
+				.maxAge(24 * 60 * 60) // 1 día
+				.sameSite("Strict") // o "Lax" según tu necesidad
+				.build();
+	}
 	
 
 }
