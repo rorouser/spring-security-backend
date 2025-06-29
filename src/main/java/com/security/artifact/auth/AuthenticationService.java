@@ -45,6 +45,7 @@ public class AuthenticationService {
 					.firstName(request.getFirstname())
 					.lastName(request.getLastname())
 					.secondLastName(request.getSecondLastName())
+					.provider("LOCAL")
 					.email(request.getEmail())
 					.userWeight(request.getUserWeight())
 					.userHeight(request.getUserHeight())
