@@ -1,5 +1,7 @@
-package com.security.artifact.auth;
+package com.security.artifact.config;
 
+import com.security.artifact.auth.AuthenticationService;
+import com.security.artifact.auth.RegisterRequest;
 import com.security.artifact.business.service.user.UserService;
 import com.security.artifact.data.entity.user.Role;
 import com.security.artifact.data.entity.user.User;
