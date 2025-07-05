@@ -1,0 +1,63 @@
+server:
+  port: 9000
+  error:
+    include-message:
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mygymroutine_hibernate
+    username: postgres
+    password: REDACTED_PASSWORD
+    driver-class-name: org.postgresql.Driver
+  graphql:
+    schema:
+      printer:
+        enabled: true
+    graphiql:
+      enabled: true
+      path: /graphiql
+    servlet:
+      mapping: /graphql
+  security:
+    user:
+      name: root
+      password: REDACTED_PASSWORD
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: REDACTED_GOOGLE_ID
+            client-secret: REDACTED_GOOGLE_SECRET
+            scope:
+              - openid
+              - profile
+              - email
+          github:
+            client-id: TU_CLIENT_ID_GITHUB
+            client-secret: TU_CLIENT_SECRET_GITHUB
+            scope:
+              - read:user
+              - user:email
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+application:
+  security:
+    jwt:
+      secret-key: REDACTED_JWT_KEY
+      expiration: 86400000 # a day
+
+admin:
+  firstname: xojin
+  lastname: manitotije
+  email: admin@admin.com
+  password: REDACTED_ADMIN_PASSWORD
