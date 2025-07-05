@@ -15,7 +15,6 @@ public class UserGraphQLController {
     @QueryMapping
     public UserResponse user(@Argument Integer id) {
         UserResponse user =  userService.user(id);
-        System.out.println("[UsuarioGraphQLController] - " + user);
         return user;
     }
 
