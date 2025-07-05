@@ -34,6 +34,21 @@ public class UserService {
 	                    .build())
 	            .orElse(null);
 	}
+
+	public UserResponse user(Integer userId) {
+		Optional<User> user = userRepository.findById(userId);
+		return user.map(value ->
+						UserResponse.builder()
+								.id(value.getId())
+								.firstName(value.getFirstName())
+								.lastName(value.getLastName())
+								.secondLastName(value.getSecondLastName())
+								.email(value.getEmail())
+								.registrationDate(value.getRegistrationDate())
+								.build())
+				.orElse(null);
+	}
+
     
     public Optional<User> getUserByIdCheck(Integer userId) {
         return userRepository.findById(userId);
