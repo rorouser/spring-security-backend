@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.security.artifact.data.repository.token.TokenRepository;
+import com.security.artifact.redis.service.token.TokenCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
 	private final TokenRepository tokenRepository;
+	private final TokenCacheService tokenCacheService;
 
 	private static final Set<String> PUBLIC_PATHS = Set.of(
 			"/api/auth/register",
@@ -66,10 +67,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		final String userEmail = jwtService.extractUserName(jwt);
+		// Si no está en cache, extrae del token y guarda en cache
+		String userEmail = jwtService.extractUserName(jwt);
+
+		if (userEmail != null) {
+			String tokenGuardado = tokenCacheService.getTokenForUser(userEmail);
+			if (tokenGuardado == null || !tokenGuardado.equals(jwt)) {
+				// Guarda el nuevo token y reemplaza el anterior
+				tokenCacheService.saveToken(jwt, userEmail);
+			}
+		}
+
 		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-			var isTokenValid = tokenRepository.findByToken(jwt)
+
+			boolean isTokenValid;
+
+			// Opcional: si quieres que la base de datos sea fuente de verdad final, mantén esta validación
+			isTokenValid = tokenRepository.findByToken(jwt)
 					.map(t -> !t.isExpired() && !t.isRevoked())
 					.orElse(false);
 			logger.debug("(JwtAuthenticationFilter.doFilterInternal) - Token is valid for signature: " + jwtService.isTokenValid(jwt, userDetails));

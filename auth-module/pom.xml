@@ -55,6 +55,13 @@
             <version>0.0.1</version>
         </dependency>
 
+        <!-- Dependencia para acceder a redis -->
+        <dependency>
+            <groupId>com.security.artifact</groupId>
+            <artifactId>redis-module</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -2,6 +2,12 @@ server:
   port: 9000
   error:
     include-message:
+redis:
+  host:
+  port:
+  username:
+  password:
+  timeout:
 spring:
   profiles:
     active: dev
@@ -27,8 +33,8 @@ spring:
       client:
         registration:
           google:
-            client-id: REDACTED_GOOGLE_ID
-            client-secret: REDACTED_GOOGLE_SECRET
+            client-id:
+            client-secret:
             scope:
               - openid
               - profile
@@ -53,8 +59,8 @@ spring:
 application:
   security:
     jwt:
-      secret-key: REDACTED_JWT_KEY
-      expiration: 86400000 # a day
+      secret-key:
+      expiration:  # a day
 
 admin:
   firstname: xojin

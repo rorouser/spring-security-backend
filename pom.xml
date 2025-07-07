@@ -28,6 +28,7 @@
 		<module>auth-module</module>
 		<module>business-module</module>
 		<module>main-app</module>
+		<module>redis-module</module>
 	</modules>
 
 	<dependencyManagement>
