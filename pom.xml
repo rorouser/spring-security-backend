@@ -1,131 +1,114 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+
 	<groupId>com.security.artifact</groupId>
-	<artifactId>security-artifact</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>security-artifact</name>
-	<description>Skeleton for Back-End project</description>
+	<artifactId>security-artifact-parent</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+	<name>security-artifact-parent</name>
+
 	<properties>
 		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<spring.boot.version>3.1.5</spring.boot.version>
+		<jjwt.version>0.11.5</jjwt.version>
+		<modelmapper.version>2.4.2</modelmapper.version>
+		<rxjava.version>3.0.13</rxjava.version>
+		<itext.version>7.2.4</itext.version>
 	</properties>
+
+	<modules>
+		<module>common-module</module>
+		<module>data-module</module>
+		<module>auth-module</module>
+		<module>business-module</module>
+		<module>main-app</module>
+		<module>redis-module</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Spring Boot BOM -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+		<!-- Dependencias comunes a todos los módulos -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${modelmapper.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.modelmapper</groupId>
-		    <artifactId>modelmapper</artifactId>
-		    <version>2.4.2</version> 
+			<groupId>io.reactivex.rxjava3</groupId>
+			<artifactId>rxjava</artifactId>
+			<version>${rxjava.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-security</artifactId>
-		    <version>3.1.5</version>
-		</dependency>
-    	<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>kernel</artifactId>
+			<version>${itext.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>layout</artifactId>
+			<version>${itext.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>0.11.5</version>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>io</artifactId>
+			<version>${itext.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-impl</artifactId>
-			<version>0.11.5</version>
-		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>0.11.5</version>
-		</dependency>	
-		<!-- https://mvnrepository.com/artifact/com.github.jbytecode/RCaller -->
-		<dependency>
-		    <groupId>com.github.jbytecode</groupId>
-		    <artifactId>RCaller</artifactId>
-		    <version>4.0.2</version>
-		</dependency>
-		<dependency>
-	        <groupId>com.itextpdf</groupId>
-	        <artifactId>kernel</artifactId>
-	        <version>7.2.4</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>com.itextpdf</groupId>
-	        <artifactId>layout</artifactId>
-	        <version>7.2.4</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>com.itextpdf</groupId>
-	        <artifactId>io</artifactId>
-	        <version>7.2.4</version>
-	    </dependency>
-	    <!-- RxJava3 dependency -->
-	    <dependency>
-	        <groupId>io.reactivex.rxjava3</groupId>
-	        <artifactId>rxjava</artifactId>
-	        <version>3.0.13</version>
-	    </dependency>
-
 	</dependencies>
 
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-                <excludes>
-                    <exclude>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
-                    </exclude>
-                </excludes>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-                <skipTests>true</skipTests>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.security.artifact</groupId>
+        <artifactId>security-artifact-parent</artifactId>
+        <version>0.0.1</version>
+    </parent>
+
+    <artifactId>main-app</artifactId>
+    <packaging>jar</packaging>
+    <name>main-app</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- Dependencias Spring Boot básicas -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Dependencias de tus otros módulos -->
+        <dependency>
+            <groupId>com.security.artifact</groupId>
+            <artifactId>auth-module</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.security.artifact</groupId>
+            <artifactId>business-module</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.security.artifact</groupId>
+            <artifactId>data-module</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.security.artifact</groupId>
+            <artifactId>common-module</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+        <!-- Dependencias de test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

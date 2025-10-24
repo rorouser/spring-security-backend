@@ -1,0 +1,13 @@
+type UserResponse {
+  id: Int!
+  firstName: String!
+  email: String!
+}
+
+type Query {
+  user(id: Int!): UserResponse
+}
+
+type Mutation {
+  crearUsuario(firstName: String!, email: String!): UserResponse
+}
